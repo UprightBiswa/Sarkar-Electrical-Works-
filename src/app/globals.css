@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space), var(--font-inter), ui-sans-serif, sans-serif;
+
+  --color-ink-950: #04060c;
+  --color-ink-900: #080c17;
+  --color-ink-850: #0c1222;
+  --color-ink-800: #111a2e;
+  --color-ink-700: #1a2540;
+  --color-ink-600: #27355a;
+
+  --color-volt-300: #fde68a;
+  --color-volt-400: #fcd34d;
+  --color-volt-500: #facc15;
+  --color-volt-600: #eab308;
+
+  --color-spark-300: #67e8f9;
+  --color-spark-400: #22d3ee;
+  --color-spark-500: #06b6d4;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-shine: shine 3.5s linear infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.06); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes shine {
+    from { background-position: 200% center; }
+    to { background-position: -200% center; }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-ink-950);
+  color: #e6e9f2;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-volt-500);
+  color: var(--color-ink-950);
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primary {
+  @apply btn bg-volt-500 text-ink-950 shadow-[0_0_30px_-5px_rgba(250,204,21,0.6)] hover:-translate-y-0.5 hover:bg-volt-400 hover:shadow-[0_0_45px_-5px_rgba(250,204,21,0.8)];
+}
+@utility btn-ghost {
+  @apply btn border border-white/15 bg-white/5 text-white hover:border-white/30 hover:bg-white/10;
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .glass {
+    @apply border border-white/10 bg-white/[0.04] backdrop-blur-xl;
+  }
+  .card {
+    @apply rounded-2xl border border-white/10 bg-ink-850/80 backdrop-blur;
+  }
+  .text-gradient {
+    background: linear-gradient(100deg, var(--color-volt-300), var(--color-volt-500) 35%, var(--color-spark-400) 70%, var(--color-volt-300));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: var(--animate-shine);
+  }
+  .input {
+    @apply w-full rounded-xl border border-white/10 bg-ink-900/80 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition focus:border-volt-500/60 focus:ring-2 focus:ring-volt-500/20;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-medium tracking-wide text-slate-400 uppercase;
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+  .noise::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Rendered markdown for CMS pages */
+  .prose-site {
+    @apply text-[15px] leading-7 text-slate-300;
+  }
+  .prose-site h2 {
+    @apply mt-10 mb-3 font-display text-2xl font-semibold text-white first:mt-0;
+  }
+  .prose-site h3 {
+    @apply mt-6 mb-2 font-display text-lg font-semibold text-white;
+  }
+  .prose-site p {
+    @apply my-4;
+  }
+  .prose-site ul {
+    @apply my-4 space-y-2;
+  }
+  .prose-site li {
+    @apply relative pl-6 before:absolute before:top-[0.7em] before:left-0 before:h-1.5 before:w-1.5 before:rounded-full before:bg-volt-500;
+  }
+  .prose-site strong {
+    @apply font-semibold text-white;
+  }
+  .prose-site a {
+    @apply text-volt-400 underline underline-offset-4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
