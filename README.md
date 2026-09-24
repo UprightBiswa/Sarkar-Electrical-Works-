@@ -8,28 +8,31 @@ Built with **Next.js 16** (App Router), **Drizzle ORM + Neon Postgres**, Tailwin
 
 ```bash
 npm install
-cp .env.example .env.local     # fill SESSION_SECRET + ADMIN_PASSWORD at least
-npm run db:setup               # create tables + one-time seed (safe to re-run)
-npm run dev                    # http://localhost:3000   admin: http://localhost:3000/admin
+npm run db:setup     # creates tables + one-time seed (safe to re-run)
+npm run dev          # http://localhost:3000   admin: http://localhost:3000/admin
 ```
 
-Without `DATABASE_URL`, an embedded Postgres (**PGlite**, stored in `./.pglite`) is used, so it runs offline. It is single-process, so stop `npm run dev` before running `npm run build` or the DB scripts.
+Locally no database is needed: it uses an embedded Postgres saved in `./.pglite`, and uploads go to `public/uploads`. Admin login comes from `.env.local` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`).
+Stop `npm run dev` before running `npm run build` or `npm run db:*`, because the local DB is single-process.
 
-| Script | What it does |
-|---|---|
-| `npm run db:push` | Sync tables to the schema (`src/lib/db/schema.ts`) |
-| `npm run db:seed` | One-time seed. Skips when content exists; `-- --force` resets site content (never bookings, messages or admins) |
-| `npm run db:studio` | Browse the database |
-| `npm run typecheck` / `npm run lint` | Checks |
+## Deploy on Vercel (live)
 
-## Deploy to Vercel
+1. **vercel.com → Add New → Project →** import this GitHub repo.
+2. **Environment Variables:** add only two:
+   - `ADMIN_EMAIL` = your login email
+   - `ADMIN_PASSWORD` = a strong password
+3. **Deploy.** The first build fails with "DATABASE_URL is missing". That's expected.
+4. Project → **Storage → Create → Neon (Postgres)** → connect to the project. This adds `DATABASE_URL` automatically.
+5. Project → **Storage → Create → Blob** → connect. This adds `BLOB_READ_WRITE_TOKEN` (needed for image uploads).
+6. **Deployments → Redeploy.** During the build, `vercel-build` creates the tables and seeds the content once. Open `/admin` and log in.
+7. (Optional) Project → **Analytics** and **Speed Insights** → Enable.
 
-1. Push to GitHub → import in Vercel.
-2. **Storage → Neon** (Postgres) → connect → sets `DATABASE_URL`.
-3. **Storage → Blob** → connect → sets `BLOB_READ_WRITE_TOKEN` (image uploads).
-4. Add env vars: `SESSION_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `NEXT_PUBLIC_SITE_URL`, optional `GOOGLE_PLACES_API_KEY`, `RESEND_API_KEY`, `ADMIN_NOTIFY_EMAIL`.
-5. Locally with the Neon `DATABASE_URL` in `.env.local`: `npm run db:setup` (once).
-6. Enable **Analytics** and **Speed Insights** in the Vercel project.
+**How the live database works:** Neon is the real database. Every deploy runs `scripts/setup-db.ts`, which applies only *new* migrations and seeds only when the database is empty. Your bookings, messages and admin edits are never overwritten. You can browse the data in the Neon dashboard (Vercel → Storage → Neon → Open).
+
+**Changing the database schema later:** edit `src/lib/db/schema.ts` → `npm run db:generate` → commit the new file in `drizzle/` → push. Vercel applies it on deploy.
+
+**Optional env vars** (add any time, then redeploy):
+`GOOGLE_PLACES_API_KEY` (Google rating, reviews and photos) · `RESEND_API_KEY` + `ADMIN_NOTIFY_EMAIL` (email alerts and replies) · `NEXT_PUBLIC_SITE_URL` (custom domain).
 
 ## Admin panel (`/admin`, separate login)
 
