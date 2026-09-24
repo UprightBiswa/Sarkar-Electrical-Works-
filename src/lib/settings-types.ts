@@ -40,20 +40,22 @@ export type SiteSettings = {
   bookingNotice: string;
 };
 
+export const GOOGLE_MAPS_URL =
+  "https://www.google.com/maps/place/Sarkar+Electrical+Works+Shivmandir/@26.7048384,88.3606269,17z/data=!4m6!3m5!1s0x39e44700365b4fb5:0x8950349704d668dc!8m2!3d26.7048384!4d88.3606269!16s%2Fg%2F11wxjr01vq";
+
 export const DEFAULT_SETTINGS: SiteSettings = {
   shopName: "Sarkar Electrical Works",
-  tagline: "Trusted electricians in Shivmandir, Siliguri",
+  tagline: "Electrical goods repair shop in Shivmandir, Siliguri",
   logoText: "SEW",
-  phone: "+91 00000 00000",
-  whatsapp: "910000000000",
-  email: "info@sarkarelectrical.in",
-  address: "Shivmandir, Siliguri, Darjeeling, West Bengal",
+  phone: "+91 95476 29016",
+  whatsapp: "919547629016",
+  email: "",
+  address: "Indirapally, Shivmandir, near Gajen More, Siliguri, Bara Mohansingh, West Bengal",
   area: "Shivmandir",
   city: "Siliguri",
   state: "West Bengal",
   pincode: "734011",
-  mapUrl:
-    "https://www.google.com/maps/place/Sarkar+Electrical+Works+Shivmandir/@26.7048384,88.3606269,17z",
+  mapUrl: GOOGLE_MAPS_URL,
   lat: 26.7048384,
   lng: 88.3606269,
   hours: [
@@ -63,53 +65,52 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     { day: "Thursday", open: "09:00", close: "20:00" },
     { day: "Friday", open: "09:00", close: "20:00" },
     { day: "Saturday", open: "09:00", close: "20:00" },
-    { day: "Sunday", open: "10:00", close: "14:00" },
+    { day: "Sunday", open: "09:00", close: "20:00" },
   ],
   hero: {
-    badge: "Shivmandir · Siliguri · Same-day service",
-    title: "Power your home with",
-    highlight: "safe, expert electrical work",
+    badge: "Indirapally · Shivmandir · Siliguri",
+    title: "All kinds of electrical goods,",
+    highlight: "repaired right.",
     subtitle:
-      "House wiring, repairs, inverter & solar installation, fans, lights and appliance service — done right the first time by experienced local electricians.",
-    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e",
+      "Fans, geysers, mixer grinders, irons, electric kettles, water pumps, angle grinders, wood planers, marble cutters, water heaters and more — expert repair at our Shivmandir shop, near Gajen More.",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
   },
   stats: [
-    { label: "Years of experience", value: "10+" },
-    { label: "Jobs completed", value: "5,000+" },
-    { label: "Happy customers", value: "3,000+" },
-    { label: "Response time", value: "< 2 hrs" },
+    { label: "Google rating", value: "5.0★" },
+    { label: "Google reviews", value: "4" },
+    { label: "Appliance types repaired", value: "10+" },
+    { label: "Shop opens", value: "9 AM" },
   ],
   whyUs: [
-    { icon: "ShieldCheck", title: "Safety first", text: "ISI-marked materials, proper earthing and code-compliant work on every job." },
-    { icon: "Clock", title: "Quick response", text: "Same-day visits across Shivmandir, Siliguri and nearby areas." },
-    { icon: "BadgeIndianRupee", title: "Fair pricing", text: "Clear quote before we start. No hidden charges, ever." },
-    { icon: "Wrench", title: "Skilled team", text: "Experienced electricians for homes, shops and small industries." },
+    { icon: "Wrench", title: "All-round repair", text: "Home appliances, motors, pumps and power tools — one shop for every electrical item." },
+    { icon: "BadgeCheck", title: "Honest diagnosis", text: "We check the fault first and tell you the cost before any repair." },
+    { icon: "Cog", title: "Quality spare parts", text: "Reliable replacement parts so your appliance lasts longer." },
+    { icon: "Store", title: "Local & reachable", text: "Walk in at Indirapally, Shivmandir — near Gajen More, Siliguri." },
   ],
   process: [
-    { title: "Book", text: "Call, WhatsApp or book online in under a minute." },
-    { title: "Inspect", text: "We visit, diagnose the issue and share a clear quote." },
-    { title: "Fix", text: "Work is done neatly with quality parts and safety checks." },
-    { title: "Support", text: "Service warranty and follow-up support after the job." },
+    { title: "Bring or book", text: "Walk in with your item, call us, or book a repair online." },
+    { title: "Diagnose", text: "We test the item and explain the fault and the price." },
+    { title: "Repair", text: "Fixed carefully with proper parts and a final safety test." },
+    { title: "Pick up", text: "We inform you when it's ready. Support after repair too." },
   ],
   socials: { facebook: "", instagram: "", youtube: "", x: "" },
   google: {
     placeId: "",
     searchQuery: "Sarkar Electrical Works Shivmandir Siliguri",
-    rating: 0,
-    reviewCount: 0,
-    reviewUrl:
-      "https://www.google.com/maps/place/Sarkar+Electrical+Works+Shivmandir/@26.7048384,88.3606269,17z",
+    rating: 5,
+    reviewCount: 4,
+    reviewUrl: GOOGLE_MAPS_URL,
     lastSyncedAt: "",
   },
   seo: {
-    title: "Sarkar Electrical Works — Electrician in Shivmandir, Siliguri",
+    title: "Sarkar Electrical Works Shivmandir — Electrical Repair Shop in Siliguri",
     description:
-      "Sarkar Electrical Works, Shivmandir, Siliguri: house wiring, electrical repairs, inverter, solar, fan & light installation and appliance repair. Book an electrician online.",
+      "Sarkar Electrical Works, Indirapally, Shivmandir (near Gajen More), Siliguri 734011. Repair of fans, geysers, mixer grinders, irons, kettles, water pumps, angle grinders, wood planers, marble cutters & water heaters. Call 095476 29016.",
     keywords:
-      "electrician Siliguri, electrician Shivmandir, house wiring Siliguri, inverter installation Siliguri, electrical repair",
+      "electrical repair Siliguri, electronics repair shop Shivmandir, fan repair Siliguri, geyser repair Siliguri, mixer grinder repair, water pump repair Siliguri, angle grinder repair, Sarkar Electrical Works",
   },
   notifyEmail: "",
-  bookingNotice: "We usually confirm bookings by phone within 2 hours during working hours.",
+  bookingNotice: "We'll call you to confirm. Shop opens at 9 AM.",
 };
 
 export function mergeSettings(data: Partial<SiteSettings> | null | undefined): SiteSettings {

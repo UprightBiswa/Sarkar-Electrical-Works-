@@ -29,8 +29,8 @@ export async function saveImage(file: File, folder = "uploads"): Promise<string>
     throw new Error("Image uploads need Vercel Blob. Connect a Blob store to this project (BLOB_READ_WRITE_TOKEN).");
   }
 
-  const dest = path.join(process.cwd(), "public", name);
+  const dest = path.join(process.cwd(), "public", "uploads", name);
   await mkdir(path.dirname(dest), { recursive: true });
   await writeFile(dest, Buffer.from(await file.arrayBuffer()));
-  return `/${name}`;
+  return `/uploads/${name}`;
 }

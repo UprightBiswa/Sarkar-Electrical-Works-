@@ -17,6 +17,7 @@ type PlaceDetails = {
   userRatingCount?: number;
   googleMapsUri?: string;
   reviews?: PlaceReview[];
+  photos?: { name: string; widthPx: number; heightPx: number; authorAttributions?: { displayName?: string }[] }[];
 };
 
 const BASE = "https://places.googleapis.com/v1";
@@ -54,10 +55,21 @@ export async function fetchPlaceDetails(placeId: string): Promise<PlaceDetails> 
   const res = await fetch(`${BASE}/places/${encodeURIComponent(placeId)}?languageCode=en`, {
     headers: {
       "X-Goog-Api-Key": key(),
-      "X-Goog-FieldMask": "id,displayName,rating,userRatingCount,googleMapsUri,reviews",
+      "X-Goog-FieldMask": "id,displayName,rating,userRatingCount,googleMapsUri,reviews,photos",
     },
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`Google Place details failed: ${res.status} ${await res.text()}`);
   return (await res.json()) as PlaceDetails;
+}
+
+/** Resolves a Places photo resource to a public (googleusercontent) image URL. */
+export async function getPhotoUri(photoName: string, maxWidthPx = 1600) {
+  const res = await fetch(`${BASE}/${photoName}/media?maxWidthPx=${maxWidthPx}&skipHttpRedirect=true`, {
+    headers: { "X-Goog-Api-Key": key() },
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  const json = (await res.json()) as { photoUri?: string };
+  return json.photoUri ?? null;
 }

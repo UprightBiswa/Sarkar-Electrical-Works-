@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, Phone, X, Zap } from "lucide-react";
+import { Menu, Phone, X } from "lucide-react";
+import { Logo } from "../Logo";
 import { cn, telHref } from "@/lib/utils";
 
 const NAV = [
@@ -28,11 +29,9 @@ export default function Header({ shopName, phone }: { shopName: string; phone: s
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => setOpen(false), [pathname]);
-
-  const [first, ...rest] = shopName.split(" ");
-
   return (
+    <>
+    <div className="scroll-progress" aria-hidden />
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-500",
@@ -46,13 +45,8 @@ export default function Header({ shopName, phone }: { shopName: string; phone: s
             scrolled ? "glass shadow-2xl shadow-black/40" : "border border-transparent",
           )}
         >
-          <Link href="/" className="group flex items-center gap-2.5">
-            <span className="relative grid h-9 w-9 place-items-center rounded-xl bg-volt-500 text-ink-950 shadow-[0_0_24px_-4px_rgba(250,204,21,0.7)] transition group-hover:rotate-12">
-              <Zap className="h-5 w-5" strokeWidth={2.5} />
-            </span>
-            <span className="font-display text-[17px] leading-tight font-bold tracking-tight">
-              {first} <span className="text-volt-400">{rest.join(" ")}</span>
-            </span>
+          <Link href="/" className="group" aria-label={`${shopName} home`}>
+            <Logo name={shopName} />
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex">
@@ -85,7 +79,7 @@ export default function Header({ shopName, phone }: { shopName: string; phone: s
               <Phone className="h-4 w-4" /> Call
             </a>
             <Link href="/book" className="btn-primary hidden sm:inline-flex">
-              Book a service
+              Book a repair
             </Link>
             <button
               onClick={() => setOpen((o) => !o)}
@@ -109,6 +103,7 @@ export default function Header({ shopName, phone }: { shopName: string; phone: s
                 <Link
                   key={n.href}
                   href={n.href}
+                  onClick={() => setOpen(false)}
                   className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-200 hover:bg-white/5"
                 >
                   {n.label}
@@ -118,7 +113,7 @@ export default function Header({ shopName, phone }: { shopName: string; phone: s
                 <a href={telHref(phone)} className="btn-ghost">
                   <Phone className="h-4 w-4" /> Call
                 </a>
-                <Link href="/book" className="btn-primary">
+                <Link href="/book" onClick={() => setOpen(false)} className="btn-primary">
                   Book now
                 </Link>
               </div>
@@ -127,5 +122,6 @@ export default function Header({ shopName, phone }: { shopName: string; phone: s
         </AnimatePresence>
       </div>
     </header>
+    </>
   );
 }

@@ -139,6 +139,32 @@ body {
   }
 }
 
+/* Travelling "current" along ServiceArt circuit traces */
+.sa-current {
+  animation: sa-flow 3.2s linear infinite;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+@keyframes sa-flow {
+  from { stroke-dashoffset: 234; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Scroll progress bar (CSS scroll-driven animation, no JS) */
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 60;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--color-volt-500), var(--color-spark-400));
+  animation: grow-x linear both;
+  animation-timeline: scroll(root);
+}
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;

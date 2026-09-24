@@ -1,5 +1,8 @@
 "use client";
 
+/* eslint-disable react-hooks/purity, react-hooks/immutability --
+   three.js objects are created once and mutated imperatively inside useFrame (standard R3F pattern). */
+
 import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, MeshDistortMaterial, Sparkles } from "@react-three/drei";

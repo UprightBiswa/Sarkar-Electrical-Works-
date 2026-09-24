@@ -143,3 +143,10 @@ export type GalleryImage = typeof galleryImages.$inferSelect;
 export type Page = typeof pages.$inferSelect;
 export type Review = typeof reviews.$inferSelect;
 export type Faq = typeof faqs.$inferSelect;
+
+/** Fixed-window rate limiting shared across serverless instances. */
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(),
+  count: integer("count").notNull().default(0),
+  windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
+});

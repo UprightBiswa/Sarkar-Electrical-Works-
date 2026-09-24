@@ -51,3 +51,22 @@ export const BOOKING_STATUSES = [
   { value: "completed", label: "Completed", color: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30" },
   { value: "cancelled", label: "Cancelled", color: "bg-rose-500/15 text-rose-300 ring-rose-500/30" },
 ] as const;
+
+/** "09:00" → "9 AM", "20:30" → "8:30 PM" */
+export function fmtTime(t: string) {
+  const [h, m = "00"] = t.split(":");
+  const hr = Number(h);
+  if (Number.isNaN(hr)) return t;
+  const suffix = hr >= 12 ? "PM" : "AM";
+  const h12 = hr % 12 || 12;
+  return `${h12}${m !== "00" ? `:${m}` : ""} ${suffix}`;
+}
+
+export function pageCount(total: number, size: number) {
+  return Math.max(1, Math.ceil(total / size));
+}
+
+export function parsePage(v: string | undefined) {
+  const n = Number(v);
+  return Number.isInteger(n) && n > 0 ? n : 1;
+}

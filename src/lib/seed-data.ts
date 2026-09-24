@@ -1,215 +1,143 @@
 const u = (id: string) => `https://images.unsplash.com/photo-${id}`;
 
+// Services from the shop's Google Business description. `image: ""` renders
+// generated service artwork (components/site/ServiceArt) until a real photo is uploaded.
 export const SEED_SERVICES = [
   {
-    slug: "house-wiring",
-    title: "House Wiring & Rewiring",
-    icon: "Cable",
-    image: u("1621905251189-08b45d6a269e"),
-    priceFrom: "₹2,500",
+    slug: "fan-repair",
+    title: "Fan Repair",
+    icon: "Fan",
+    image: "",
+    priceFrom: "",
     isFeatured: true,
-    shortDesc: "New wiring, concealed & open wiring, and full rewiring of old homes.",
+    shortDesc: "Ceiling, table, pedestal, wall and exhaust fans — slow speed, noise, winding & capacitor issues.",
     description:
-      "Complete wiring solutions for new construction and renovation. We plan circuits, fit distribution boards with MCB/RCCB protection, and use ISI-marked FR/FRLS copper wires. Old, overloaded or damaged wiring is safely replaced to protect your family and appliances.",
-    features: [
-      "Concealed & surface (casing-capping) wiring",
-      "Distribution board, MCB & RCCB fitting",
-      "Proper earthing & load balancing",
-      "ISI-marked wires and fittings",
-      "Neat finish with minimal wall damage",
-    ],
+      "Fan running slow, making noise or not starting? We repair all kinds of fans: ceiling, table, pedestal, wall-mount and exhaust fans. Common jobs include capacitor replacement, bearing change, coil rewinding, regulator and switch faults.",
+    features: ["Capacitor replacement", "Bearing & bush change", "Coil rewinding", "Regulator & switch repair", "Blade balancing & noise fix"],
   },
   {
-    slug: "electrical-repair",
-    title: "Electrical Repair & Fault Finding",
-    icon: "Zap",
-    image: u("1555963966-b7ae5404b6ed"),
-    priceFrom: "₹199",
+    slug: "geyser-water-heater-repair",
+    title: "Geyser & Water Heater Repair",
+    icon: "Flame",
+    image: "",
+    priceFrom: "",
     isFeatured: true,
-    shortDesc: "Short circuits, tripping MCBs, sparking sockets and power failures fixed fast.",
+    shortDesc: "Not heating, tripping or leaking — heating element, thermostat and wiring repairs.",
     description:
-      "Power cut in one room? MCB keeps tripping? Burning smell from a switch? Our electricians trace the fault quickly with proper testing tools and fix it safely — switches, sockets, holders, MCBs, cables and more.",
-    features: [
-      "Short-circuit & tripping diagnosis",
-      "Switch, socket & board repair",
-      "MCB / fuse replacement",
-      "Burnt wire replacement",
-      "Same-day emergency visits",
-    ],
+      "We repair storage and instant geysers as well as immersion water heaters. From a burnt heating element or faulty thermostat to wiring and indicator problems, we find the fault and fix it safely.",
+    features: ["Heating element replacement", "Thermostat & cut-out repair", "Indicator & wiring faults", "Immersion rod repair", "Safety check after repair"],
   },
   {
-    slug: "fan-light-installation",
-    title: "Fan, Light & Fixture Installation",
-    icon: "Lightbulb",
-    image: u("1513506003901-1e6a229e2d15"),
-    priceFrom: "₹149",
+    slug: "mixer-grinder-repair",
+    title: "Mixer Grinder Repair",
+    icon: "Blend",
+    image: "",
+    priceFrom: "",
     isFeatured: true,
-    shortDesc: "Ceiling & exhaust fans, LED panels, chandeliers, decorative and outdoor lights.",
+    shortDesc: "Motor not running, burning smell, jar coupler or speed switch problems.",
     description:
-      "From a single ceiling fan to a full LED lighting makeover, we install and repair all kinds of fans and light fixtures. We also fit regulators, dimmers, profile lights and outdoor/garden lighting.",
-    features: [
-      "Ceiling, wall & exhaust fans",
-      "LED panel, strip & profile lights",
-      "Chandelier & decorative fittings",
-      "Fan regulator & dimmer fitting",
-      "Outdoor & garden lighting",
-    ],
+      "Bring your mixer grinder or juicer to our shop. We repair motors, carbon brushes, speed switches, overload protectors and couplers, and replace worn parts so it runs smoothly again.",
+    features: ["Motor & armature repair", "Carbon brush replacement", "Speed switch repair", "Coupler & jar parts", "Overload protector fix"],
   },
   {
-    slug: "inverter-battery",
-    title: "Inverter & Battery Installation",
-    icon: "BatteryCharging",
-    image: u("1581092918056-0c4c3acd3789"),
-    priceFrom: "₹499",
+    slug: "iron-kettle-repair",
+    title: "Iron & Electric Kettle Repair",
+    icon: "Coffee",
+    image: "",
+    priceFrom: "",
     isFeatured: true,
-    shortDesc: "Home UPS / inverter setup, separate wiring, battery service and repair.",
+    shortDesc: "Electric irons and kettles that don't heat, overheat or trip — element, thermostat & cord.",
     description:
-      "Stay powered through load-shedding. We install inverters with dedicated backup wiring for selected points, service and top-up batteries, and repair inverter faults for all major brands.",
-    features: [
-      "Inverter & battery installation",
-      "Dedicated backup-point wiring",
-      "Battery health check & water top-up",
-      "Inverter repair (all brands)",
-      "Load calculation & advice",
-    ],
+      "Dry and steam irons, electric kettles and similar heating appliances repaired: heating element, thermostat, thermal fuse, power cord and switch problems.",
+    features: ["Iron heating & thermostat repair", "Kettle element & base repair", "Thermal fuse replacement", "Power cord & plug change", "Steam iron servicing"],
   },
   {
-    slug: "solar-installation",
-    title: "Solar Panel Installation",
-    icon: "Sun",
-    image: u("1509391366360-2e959784a276"),
-    priceFrom: "Get a quote",
+    slug: "water-pump-repair",
+    title: "Water Pump & Motor Repair",
+    icon: "Droplets",
+    image: "",
+    priceFrom: "",
     isFeatured: true,
-    shortDesc: "Rooftop solar systems for homes and shops — on-grid, off-grid and hybrid.",
+    shortDesc: "Domestic water pumps and motors — rewinding, starting problems, bearing and seal change.",
     description:
-      "Cut your electricity bill with rooftop solar. We help you size the system, install panels, inverter and protection gear, and guide you on net-metering and government subsidy paperwork.",
-    features: [
-      "Site survey & system sizing",
-      "On-grid, off-grid & hybrid systems",
-      "Mounting structure & wiring",
-      "Earthing & lightning protection",
-      "Subsidy & net-metering guidance",
-    ],
+      "Motor humming but not pumping? Tripping or overheating? We repair and rewind domestic water pumps and electric motors, replace bearings, seals and capacitors, and test them before handover.",
+    features: ["Motor rewinding", "Capacitor & starter repair", "Bearing & mechanical seal change", "Overheating & tripping fix", "Performance test before handover"],
   },
   {
-    slug: "appliance-repair",
-    title: "Appliance & Motor Repair",
-    icon: "Wrench",
-    image: u("1558618666-fcd25c85cd64"),
-    priceFrom: "₹249",
+    slug: "power-tool-repair",
+    title: "Power Tool Repair",
+    icon: "Drill",
+    image: "",
+    priceFrom: "",
     isFeatured: true,
-    shortDesc: "Water pumps, motors, geysers, mixers, irons and other home appliances.",
+    shortDesc: "Angle grinders, wood planer machines, marble cutters and other electric tools.",
     description:
-      "Bring it to our Shivmandir shop or book a home visit. We repair and rewind motors and water pumps, and service geysers, induction cooktops, mixers, irons, heaters and more.",
-    features: [
-      "Water pump & motor repair / rewinding",
-      "Geyser installation & repair",
-      "Mixer, iron, heater & induction repair",
-      "Starter & float switch fitting",
-      "Genuine spare parts",
-    ],
+      "Keep your work tools running. We repair angle grinders, wood planer machines, marble cutters, drills and similar power tools — armature and field coil rewinding, carbon brushes, switches, gears and bearings.",
+    features: ["Angle grinder repair", "Wood planer machine repair", "Marble cutter repair", "Armature & field coil rewinding", "Switch, gear & bearing replacement"],
   },
   {
-    slug: "smart-home-cctv",
-    title: "Smart Home & CCTV",
-    icon: "Cctv",
-    image: u("1558002038-1055907df827"),
-    priceFrom: "₹999",
+    slug: "electrical-goods-repair",
+    title: "All Electrical Goods Repair",
+    icon: "Plug",
+    image: "",
+    priceFrom: "",
     isFeatured: false,
-    shortDesc: "CCTV cameras, video door phones, smart switches and home automation.",
+    shortDesc: "Room heaters, induction cooktops, extension boards and other household electrical items.",
     description:
-      "Upgrade your home with modern security and convenience — CCTV cameras with mobile viewing, video door phones, smart switches, sensors and Wi-Fi controlled lighting.",
-    features: [
-      "CCTV camera & DVR/NVR setup",
-      "Mobile app viewing configuration",
-      "Video door phone installation",
-      "Smart switches & automation",
-      "Motion sensor lights",
-    ],
-  },
-  {
-    slug: "safety-inspection",
-    title: "Electrical Safety Inspection",
-    icon: "ShieldCheck",
-    image: u("1592833159155-c62df1b65634"),
-    priceFrom: "₹399",
-    isFeatured: false,
-    shortDesc: "Earthing test, load check and complete safety audit for home or shop.",
-    description:
-      "An electrical health check-up for your property. We test earthing, insulation and load, check for loose connections and overloaded circuits, and give you a clear report with recommendations.",
-    features: [
-      "Earthing resistance test",
-      "Insulation & leakage check",
-      "Load & circuit assessment",
-      "RCCB / MCB function test",
-      "Written recommendations",
-    ],
-  },
-  {
-    slug: "commercial-wiring",
-    title: "Shop & Commercial Wiring",
-    icon: "Building2",
-    image: u("1473341304170-971dccb5ac1e"),
-    priceFrom: "Get a quote",
-    isFeatured: false,
-    shortDesc: "Shops, offices, godowns and small industries — 3-phase and panel work.",
-    description:
-      "End-to-end electrical work for commercial spaces: 3-phase connections, panel boards, industrial sockets, lighting layouts and annual maintenance contracts.",
-    features: [
-      "3-phase wiring & panel boards",
-      "Office & showroom lighting",
-      "Industrial sockets & machines",
-      "New meter / load application help",
-      "Annual maintenance contracts (AMC)",
-    ],
+      "Have something else that stopped working? We repair all kinds of electrical goods. Bring it to the shop and we'll check it and tell you what's possible.",
+    features: ["Room heaters", "Induction & hot plates", "Extension boards & adaptors", "Chargers & small appliances", "General electrical fault finding"],
   },
 ];
 
+// Placeholder stock photos (Unsplash) with neutral captions. Replace them with real
+// shop photos from Admin → Gallery, or import your Google Maps photos via Admin → Reviews → Sync.
 export const SEED_GALLERY = [
-  { url: u("1621905251189-08b45d6a269e"), title: "Distribution board work", category: "Wiring" },
-  { url: u("1621905252507-b35492cc74b4"), title: "Our electrician on site", category: "Team" },
-  { url: u("1555963966-b7ae5404b6ed"), title: "Line maintenance", category: "Repair" },
-  { url: u("1513506003901-1e6a229e2d15"), title: "Pendant light fitting", category: "Lighting" },
-  { url: u("1524484485831-a92ffc0de03f"), title: "Modern ceiling light", category: "Lighting" },
-  { url: u("1509391366360-2e959784a276"), title: "Solar panel setup", category: "Solar" },
-  { url: u("1545259741-2ea3ebf61fa3"), title: "Smart thermostat", category: "Smart Home" },
-  { url: u("1560185007-cde436f6a4d0"), title: "Home interior lighting", category: "Lighting" },
-  { url: u("1581092918056-0c4c3acd3789"), title: "Circuit repair", category: "Repair" },
-  { url: u("1592833159155-c62df1b65634"), title: "Testing & inspection", category: "Inspection" },
-  { url: u("1600585154340-be6161a56a0c"), title: "Complete home electrical", category: "Wiring" },
-  { url: u("1611365892117-00ac5ef43c90"), title: "Rooftop solar", category: "Solar" },
+  { url: u("1558618666-fcd25c85cd64"), title: "Appliance repair bench", category: "Repair" },
+  { url: u("1581092918056-0c4c3acd3789"), title: "Circuit board repair", category: "Repair" },
+  { url: u("1565608438257-fac3c27beb36"), title: "Testing with a multimeter", category: "Testing" },
+  { url: u("1504328345606-18bbc8c9d7d1"), title: "Power tool work", category: "Power tools" },
+  { url: u("1586864387967-d02ef85d93e8"), title: "Tools of the trade", category: "Power tools" },
+  { url: u("1621905251189-08b45d6a269e"), title: "Electrical fault finding", category: "Testing" },
 ];
 
 export const SEED_FAQS = [
-  { question: "Which areas do you serve?", answer: "We serve Shivmandir and all of Siliguri — including Bagdogra, Matigara, Champasari, Pradhan Nagar, Sevoke Road and nearby areas." },
-  { question: "Do you offer same-day or emergency service?", answer: "Yes. For urgent problems like short circuits or complete power failure, call or WhatsApp us and we will try to reach you the same day." },
-  { question: "How is the price decided?", answer: "Small jobs have fixed visiting and service charges. For bigger work like wiring or solar we inspect first and give you a clear written quote before starting." },
-  { question: "Do you provide a warranty?", answer: "Yes, our workmanship comes with a service warranty, and parts carry the manufacturer's warranty." },
-  { question: "Can I bring my appliance to the shop?", answer: "Absolutely. You can bring motors, pumps, mixers, irons and other small appliances to our Shivmandir shop for repair." },
-  { question: "What payment methods do you accept?", answer: "Cash, UPI (Google Pay, PhonePe, Paytm) and bank transfer." },
+  { question: "What items do you repair?", answer: "All kinds of electrical goods — fans, geysers, mixer grinders, irons, electric kettles, water pumps, angle grinders, wood planer machines, marble cutters, water heaters and more." },
+  { question: "Where is the shop?", answer: "Indirapally, Shivmandir, near Gajen More, Siliguri (Bara Mohansingh), West Bengal 734011. Tap 'Directions' to open it in Google Maps." },
+  { question: "What time do you open?", answer: "The shop opens at 9 AM. Call us on 095476 29016 before visiting if you want to check availability." },
+  { question: "Do I need to book before bringing an item?", answer: "No — you can walk in. Booking online or calling first simply helps us keep time ready for you." },
+  { question: "Will you tell me the price before repairing?", answer: "Yes. We check the item first and tell you the fault and the cost before starting the repair." },
+  { question: "How do I pay?", answer: "Please ask at the shop for accepted payment methods (cash / UPI)." },
 ];
 
 export const SEED_PAGES = [
   {
     slug: "about",
     title: "About Us",
-    metaDescription: "Learn about Sarkar Electrical Works, a trusted electrical shop and service team in Shivmandir, Siliguri.",
-    content: `## Our story
+    metaDescription: "Sarkar Electrical Works — electrical goods repair shop at Indirapally, Shivmandir, near Gajen More, Siliguri.",
+    content: `## Who we are
 
-**Sarkar Electrical Works** is a family-run electrical shop and service team based in **Shivmandir, Siliguri**. For over a decade we have been helping homes, shops and small businesses across Siliguri with safe, reliable electrical work.
+**Sarkar Electrical Works** is a local electrical goods repair shop at **Indirapally, Shivmandir, near Gajen More, Siliguri** (Bara Mohansingh, West Bengal 734011).
 
-What started as a small repair counter has grown into a full-service team — from fixing a single switch to wiring entire buildings, installing inverters and rooftop solar systems.
+We repair all kinds of electrical goods — from everyday home appliances to heavy-duty power tools.
 
-## What we believe in
+## What we repair
 
-- **Safety before everything** — correct earthing, proper protection devices and quality materials.
-- **Honest pricing** — a clear quote before work begins.
-- **Respect for your home** — we arrive on time, work neatly and clean up after.
-- **Long-term relationships** — most of our customers come through referrals.
+- **Fans** — ceiling, table, pedestal and exhaust fans
+- **Geysers & water heaters**
+- **Mixer grinders, irons & electric kettles**
+- **Water pumps & electric motors**
+- **Power tools** — angle grinders, wood planer machines, marble cutters
+- …and many other electrical items
 
-## Our shop
+## How we work
 
-Visit our shop in Shivmandir for electrical goods, fittings and appliance repair. Our team is happy to advise you on the right products for your home.`,
+- We check your item and explain the fault first.
+- You get the price **before** we start the repair.
+- Repairs are done with proper parts and tested before handover.
+
+## Visit us
+
+Walk in to the shop or call **095476 29016**. You can also book a repair online and we'll call you back.`,
   },
   {
     slug: "privacy-policy",

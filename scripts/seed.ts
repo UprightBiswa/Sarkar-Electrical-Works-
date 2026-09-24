@@ -1,20 +1,21 @@
 /**
  * One-time seed. Safe to run repeatedly: it only inserts content when the
- * database is empty. Use `npm run db:seed -- --force` to reset site content
+ * database is empty. `npm run db:seed -- --force` resets site content
  * (bookings, messages and admins are never deleted).
  */
 import { config } from "dotenv";
-config({ path: ".env.local" });
-config();
+config({ path: ".env.local", quiet: true });
+config({ quiet: true });
 
 import bcrypt from "bcryptjs";
+import { randomBytes } from "node:crypto";
+import { pathToFileURL } from "node:url";
 import { sql } from "drizzle-orm";
 import { getDb, schema } from "../src/lib/db";
 import { DEFAULT_SETTINGS } from "../src/lib/settings-types";
 import { SEED_FAQS, SEED_GALLERY, SEED_PAGES, SEED_SERVICES } from "../src/lib/seed-data";
 
-async function main() {
-  const force = process.argv.includes("--force");
+export async function seed({ force = false } = {}) {
   const db = await getDb();
 
   const existing = await db.select({ id: schema.siteSettings.id }).from(schema.siteSettings);
@@ -45,7 +46,7 @@ async function main() {
   const admins = await db.select({ id: schema.admins.id }).from(schema.admins);
   if (!admins.length) {
     const email = (process.env.ADMIN_EMAIL || "admin@sarkarelectrical.in").toLowerCase();
-    const password = process.env.ADMIN_PASSWORD || "ChangeMe@123";
+    const password = process.env.ADMIN_PASSWORD || randomBytes(9).toString("base64url");
     await db.insert(schema.admins).values({
       name: process.env.ADMIN_NAME || "Owner",
       email,
@@ -53,15 +54,21 @@ async function main() {
       role: "owner",
     });
     console.log(`✓ Created owner admin: ${email}`);
-    if (!process.env.ADMIN_PASSWORD) console.log(`  Temporary password: ${password}  ← change it after first login!`);
+    if (!process.env.ADMIN_PASSWORD) {
+      console.log(`  ⚠ ADMIN_PASSWORD not set — generated password: ${password}`);
+      console.log("    Log in and change it in Admin → Admin users.");
+    }
   } else {
     console.log("✓ Admin users exist — skipping admin creation.");
   }
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+// CLI: `tsx scripts/seed.ts [--force]`
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  seed({ force: process.argv.includes("--force") })
+    .then(() => process.exit(0))
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
+}

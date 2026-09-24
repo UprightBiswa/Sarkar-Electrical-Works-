@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 import { getSettings } from "@/lib/data";
 import { emailTable, sendEmail } from "@/lib/email";
+import { log, mask } from "@/lib/logger";
+import { clientIp, rateLimit, retryText } from "@/lib/rate-limit";
 
 export type FormState = { ok: boolean; message: string; errors?: Record<string, string> };
 
@@ -37,6 +39,8 @@ export async function submitBooking(_: FormState, formData: FormData): Promise<F
     return { ok: false, message: "Please fix the highlighted fields.", errors: fieldErrors(parsed.error) };
   }
   const d = parsed.data;
+  const rl = await rateLimit("booking", await clientIp());
+  if (!rl.ok) return { ok: false, message: `Too many booking requests. Please try again in ${retryText(rl.resetIn)} or call us.` };
   try {
     const db = await getDb();
     let serviceId: number | null = null;
@@ -66,6 +70,7 @@ export async function submitBooking(_: FormState, formData: FormData): Promise<F
       })
       .returning({ id: schema.bookings.id });
 
+    log.info("booking.created", { bookingId: row.id, service: serviceName, phone: mask(d.phone) });
     const settings = await getSettings();
     const notify = settings.notifyEmail || process.env.ADMIN_NOTIFY_EMAIL || "";
     await sendEmail({
@@ -98,7 +103,7 @@ export async function submitBooking(_: FormState, formData: FormData): Promise<F
     }
     return { ok: true, message: `Booking #${row.id} received! ${settings.bookingNotice}` };
   } catch (e) {
-    console.error(e);
+    log.error("booking.failed", { error: e });
     return { ok: false, message: "Something went wrong. Please call us directly." };
   }
 }
@@ -118,9 +123,12 @@ export async function submitContact(_: FormState, formData: FormData): Promise<F
     return { ok: false, message: "Please fix the highlighted fields.", errors: fieldErrors(parsed.error) };
   }
   const d = parsed.data;
+  const rl = await rateLimit("contact", await clientIp());
+  if (!rl.ok) return { ok: false, message: `Too many messages. Please try again in ${retryText(rl.resetIn)}.` };
   try {
     const db = await getDb();
     await db.insert(schema.contactMessages).values(d);
+    log.info("contact.created", { email: mask(d.email) });
     const settings = await getSettings();
     await sendEmail({
       to: settings.notifyEmail || process.env.ADMIN_NOTIFY_EMAIL || "",
@@ -136,7 +144,7 @@ export async function submitContact(_: FormState, formData: FormData): Promise<F
     });
     return { ok: true, message: "Thanks! Your message has been sent. We'll get back to you soon." };
   } catch (e) {
-    console.error(e);
+    log.error("contact.failed", { error: e });
     return { ok: false, message: "Something went wrong. Please try again or call us." };
   }
 }

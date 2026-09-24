@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { and, eq, ne } from "drizzle-orm";
 import { z } from "zod";
@@ -9,18 +9,24 @@ import { getDb, schema } from "@/lib/db";
 import { createSession, destroySession, requireAdmin, requireOwner } from "@/lib/auth";
 import { saveImage } from "@/lib/upload";
 import { emailEnabled, esc, sendEmail } from "@/lib/email";
-import { fetchPlaceDetails, findPlaceId } from "@/lib/google-reviews";
+import { fetchPlaceDetails, findPlaceId, getPhotoUri } from "@/lib/google-reviews";
 import { mergeSettings, type SiteSettings } from "@/lib/settings-types";
-import { getSettings } from "@/lib/data";
+import { getSettings, TAGS } from "@/lib/data";
+import { log } from "@/lib/logger";
+import { clientIp, rateLimit, retryText } from "@/lib/rate-limit";
 import { slugify } from "@/lib/utils";
 
-export type ActionState = { ok: boolean; message: string };
+export type ActionState = { ok: boolean; message: string; data?: Record<string, string> };
 const ok = (message: string): ActionState => ({ ok: true, message });
 const fail = (message: string): ActionState => ({ ok: false, message });
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 const bool = (fd: FormData, k: string) => fd.get(k) === "on" || fd.get(k) === "true";
 
-function refreshSite() {
+type Tag = (typeof TAGS)[keyof typeof TAGS];
+
+/** Expire the tagged data cache immediately, then refresh ISR pages that use it. */
+function invalidate(...tags: Tag[]) {
+  for (const t of tags) revalidateTag(t, { expire: 0 });
   revalidatePath("/", "layout");
 }
 
@@ -31,11 +37,19 @@ export async function login(_: ActionState, fd: FormData): Promise<ActionState> 
   const password = String(fd.get("password") ?? "");
   if (!email || !password) return fail("Enter your email and password.");
 
+  const ip = await clientIp();
+  const rl = await rateLimit("login", `${ip}:${email}`);
+  if (!rl.ok) return fail(`Too many attempts. Try again in ${retryText(rl.resetIn)}.`);
+
   const db = await getDb();
   const [admin] = await db.select().from(schema.admins).where(eq(schema.admins.email, email));
   // Constant-ish time: always run a bcrypt compare
   const valid = await bcrypt.compare(password, admin?.passwordHash ?? "$2a$10$invalidinvalidinvalidinvalidinvalidinvalidinvalidinva");
-  if (!admin || !valid) return fail("Invalid email or password.");
+  if (!admin || !valid) {
+    log.warn("admin.login_failed", { ip, email });
+    return fail("Invalid email or password.");
+  }
+  log.info("admin.login", { adminId: admin.id, ip });
 
   await db.update(schema.admins).set({ lastLoginAt: new Date() }).where(eq(schema.admins.id, admin.id));
   await createSession(admin);
@@ -172,7 +186,7 @@ export async function saveService(_: ActionState, fd: FormData): Promise<ActionS
   } else {
     await db.insert(schema.services).values(values);
   }
-  refreshSite();
+  invalidate(TAGS.services);
   redirect("/admin/services?saved=1");
 }
 
@@ -180,7 +194,7 @@ export async function deleteService(fd: FormData) {
   await requireAdmin();
   const db = await getDb();
   await db.delete(schema.services).where(eq(schema.services.id, Number(fd.get("id"))));
-  refreshSite();
+  invalidate(TAGS.services);
 }
 
 export async function toggleService(fd: FormData) {
@@ -191,7 +205,7 @@ export async function toggleService(fd: FormData) {
     .update(schema.services)
     .set({ [field]: fd.get("value") === "true" })
     .where(eq(schema.services.id, Number(fd.get("id"))));
-  refreshSite();
+  invalidate(TAGS.services);
 }
 
 /* ───────────────────────── Gallery ───────────────────────── */
@@ -213,7 +227,7 @@ export async function uploadGalleryImages(_: ActionState, fd: FormData): Promise
   }
   if (url) urls.push(url);
   await db.insert(schema.galleryImages).values(urls.map((u) => ({ url: u, category, title })));
-  refreshSite();
+  invalidate(TAGS.gallery);
   return ok(`${urls.length} image${urls.length > 1 ? "s" : ""} added.`);
 }
 
@@ -226,14 +240,14 @@ export async function updateGalleryImage(fd: FormData) {
   if (fd.has("isActive")) patch.isActive = fd.get("isActive") === "true";
   if (fd.has("sortOrder")) patch.sortOrder = Number(fd.get("sortOrder") || 0);
   await db.update(schema.galleryImages).set(patch).where(eq(schema.galleryImages.id, Number(fd.get("id"))));
-  refreshSite();
+  invalidate(TAGS.gallery);
 }
 
 export async function deleteGalleryImage(fd: FormData) {
   await requireAdmin();
   const db = await getDb();
   await db.delete(schema.galleryImages).where(eq(schema.galleryImages.id, Number(fd.get("id"))));
-  refreshSite();
+  invalidate(TAGS.gallery);
 }
 
 /* ───────────────────────── Pages ───────────────────────── */
@@ -255,7 +269,7 @@ export async function savePage(_: ActionState, fd: FormData): Promise<ActionStat
     .insert(schema.pages)
     .values(values)
     .onConflictDoUpdate({ target: schema.pages.slug, set: values });
-  refreshSite();
+  invalidate(TAGS.pages);
   return ok("Page saved.");
 }
 
@@ -271,7 +285,7 @@ export async function saveFaq(_: ActionState, fd: FormData): Promise<ActionState
   const db = await getDb();
   if (id) await db.update(schema.faqs).set(values).where(eq(schema.faqs.id, id));
   else await db.insert(schema.faqs).values(values);
-  refreshSite();
+  invalidate(TAGS.faqs);
   return ok("FAQ saved.");
 }
 
@@ -279,7 +293,7 @@ export async function deleteFaq(fd: FormData) {
   await requireAdmin();
   const db = await getDb();
   await db.delete(schema.faqs).where(eq(schema.faqs.id, Number(fd.get("id"))));
-  refreshSite();
+  invalidate(TAGS.faqs);
 }
 
 /* ───────────────────────── Settings ───────────────────────── */
@@ -311,13 +325,13 @@ export async function saveSettings(_: ActionState, fd: FormData): Promise<Action
     .insert(schema.siteSettings)
     .values({ id: 1, data: merged, updatedAt: new Date() })
     .onConflictDoUpdate({ target: schema.siteSettings.id, set: { data: merged, updatedAt: new Date() } });
-  refreshSite();
-  return ok("Settings saved.");
+  invalidate(TAGS.settings);
+  return { ok: true, message: "Settings saved.", data: { heroImage: merged.hero.image } };
 }
 
 /* ───────────────────────── Reviews ───────────────────────── */
 
-export async function syncGoogleReviews(_: ActionState): Promise<ActionState> {
+export async function syncGoogleReviews(): Promise<ActionState> {
   await requireAdmin();
   const settings = await getSettings();
   try {
@@ -355,6 +369,22 @@ export async function syncGoogleReviews(_: ActionState): Promise<ActionState> {
         });
       count++;
     }
+    // Import the shop's Google Maps photos into the gallery (skips ones already imported)
+    let photosAdded = 0;
+    const existing = new Set((await db.select({ url: schema.galleryImages.url }).from(schema.galleryImages)).map((g) => g.url));
+    for (const ph of (place.photos ?? []).slice(0, 10)) {
+      const uri = await getPhotoUri(ph.name);
+      if (!uri || existing.has(uri)) continue;
+      await db.insert(schema.galleryImages).values({
+        url: uri,
+        title: ph.authorAttributions?.[0]?.displayName ? `Photo by ${ph.authorAttributions[0].displayName}` : "Our shop",
+        category: "Shop",
+        sortOrder: -1,
+      });
+      photosAdded++;
+    }
+    log.info("google.synced", { reviews: count, photosAdded });
+
     const next = mergeSettings({
       ...settings,
       google: {
@@ -370,8 +400,8 @@ export async function syncGoogleReviews(_: ActionState): Promise<ActionState> {
       .insert(schema.siteSettings)
       .values({ id: 1, data: next })
       .onConflictDoUpdate({ target: schema.siteSettings.id, set: { data: next, updatedAt: new Date() } });
-    refreshSite();
-    return ok(`Synced ${count} reviews · Google rating ${place.rating ?? "—"} (${place.userRatingCount ?? 0} reviews).`);
+    invalidate(TAGS.reviews, TAGS.settings, TAGS.gallery);
+    return ok(`Synced ${count} reviews and ${photosAdded} new photos · Google rating ${place.rating ?? "—"} (${place.userRatingCount ?? 0} reviews).`);
   } catch (e) {
     return fail((e as Error).message);
   }
@@ -392,7 +422,7 @@ export async function saveReview(_: ActionState, fd: FormData): Promise<ActionSt
     relativeTime: str(fd, "relativeTime"),
     publishedAt: new Date(),
   });
-  refreshSite();
+  invalidate(TAGS.reviews, TAGS.settings, TAGS.gallery);
   return ok("Review added.");
 }
 
@@ -403,14 +433,14 @@ export async function toggleReview(fd: FormData) {
     .update(schema.reviews)
     .set({ isVisible: fd.get("isVisible") === "true" })
     .where(eq(schema.reviews.id, Number(fd.get("id"))));
-  refreshSite();
+  invalidate(TAGS.reviews, TAGS.settings, TAGS.gallery);
 }
 
 export async function deleteReview(fd: FormData) {
   await requireAdmin();
   const db = await getDb();
   await db.delete(schema.reviews).where(eq(schema.reviews.id, Number(fd.get("id"))));
-  refreshSite();
+  invalidate(TAGS.reviews, TAGS.settings, TAGS.gallery);
 }
 
 /* ───────────────────────── Admin users ───────────────────────── */

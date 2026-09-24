@@ -12,7 +12,7 @@ export default function FloatingActions({ phone, whatsapp, shopName }: { phone: 
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1.2, type: "spring" }}
-        href={waHref(whatsapp, `Hello ${shopName}, I need an electrician.`)}
+        href={waHref(whatsapp, `Hello ${shopName}, I need a repair.`)}
         target="_blank"
         rel="noreferrer"
         aria-label="Chat on WhatsApp"

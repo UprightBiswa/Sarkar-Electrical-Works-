@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { siteUrl } from "@/lib/site-url";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -10,7 +11,7 @@ const space = Space_Grotesk({ variable: "--font-space", subsets: ["latin"] });
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const base = siteUrl();
   return {
     metadataBase: new URL(base),
     title: { default: s.seo.title, template: `%s · ${s.shopName}` },
@@ -33,7 +34,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${space.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${space.variable}`}>
       <body className="min-h-screen font-sans">
         {children}
         <Analytics />

@@ -4,7 +4,8 @@ import { ArrowUpRight, Star } from "lucide-react";
 import type { Review, Service } from "@/lib/db/schema";
 import { Icon } from "@/lib/icons";
 import { cn, img } from "@/lib/utils";
-import { Reveal } from "../motion";
+import { Reveal, Tilt } from "../motion";
+import ServiceArt from "./ServiceArt";
 
 export function SectionHeading({
   eyebrow,
@@ -49,9 +50,10 @@ export function PageHero({ eyebrow, title, subtitle, image }: { eyebrow: string;
 
 export function ServiceCard({ s }: { s: Service }) {
   return (
+    <Tilt className="h-full">
     <Link
       href={`/services/${s.slug}`}
-      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-ink-850 transition duration-500 hover:-translate-y-1.5 hover:border-volt-500/40 hover:shadow-[0_20px_60px_-20px_rgba(250,204,21,0.35)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-ink-850 transition-[border-color,box-shadow] duration-500 hover:border-volt-500/40 hover:shadow-[0_20px_60px_-20px_rgba(250,204,21,0.35)]"
     >
       <div className="relative h-48 overflow-hidden">
         {s.image ? (
@@ -63,7 +65,7 @@ export function ServiceCard({ s }: { s: Service }) {
             className="object-cover transition duration-700 group-hover:scale-110"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-ink-700 to-ink-900" />
+          <ServiceArt seed={s.slug} icon={s.icon} className="transition duration-700 group-hover:scale-105" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-ink-850 via-ink-850/30 to-transparent" />
         <span className="absolute bottom-4 left-5 grid h-12 w-12 place-items-center rounded-2xl bg-volt-500 text-ink-950 shadow-[0_0_30px_-4px_rgba(250,204,21,0.7)] transition duration-500 group-hover:rotate-[-8deg]">
@@ -83,6 +85,7 @@ export function ServiceCard({ s }: { s: Service }) {
         </span>
       </div>
     </Link>
+    </Tilt>
   );
 }
 

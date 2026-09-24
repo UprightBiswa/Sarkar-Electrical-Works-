@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, motion, useInView, useMotionValue, useTransform, type HTMLMotionProps } from "framer-motion";
+import { animate, motion, useInView, useMotionValue, useSpring, useTransform, type HTMLMotionProps } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 export function Reveal({
@@ -60,8 +60,12 @@ export function Counter({ value }: { value: string }) {
   const prefix = match?.[1] ?? "";
   const suffix = match?.[3] ?? "";
   const target = match ? Number(match[2].replace(/,/g, "")) : 0;
+  const decimals = match?.[2].split(".")[1]?.length ?? 0;
   const mv = useMotionValue(0);
-  const text = useTransform(mv, (v) => `${prefix}${Math.round(v).toLocaleString("en-IN")}${suffix}`);
+  const text = useTransform(
+    mv,
+    (v) => `${prefix}${v.toLocaleString("en-IN", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`,
+  );
 
   useEffect(() => {
     if (inView && target) {
@@ -72,4 +76,30 @@ export function Counter({ value }: { value: string }) {
 
   if (!match) return <span ref={ref}>{value}</span>;
   return <motion.span ref={ref}>{text}</motion.span>;
+}
+
+/** Subtle 3D tilt that follows the pointer (disabled for touch / reduced motion by nature of hover). */
+export function Tilt({ children, className, max = 7 }: { children: React.ReactNode; className?: string; max?: number }) {
+  const rx = useMotionValue(0);
+  const ry = useMotionValue(0);
+  const srx = useSpring(rx, { stiffness: 200, damping: 18 });
+  const sry = useSpring(ry, { stiffness: 200, damping: 18 });
+  return (
+    <motion.div
+      className={className}
+      style={{ rotateX: srx, rotateY: sry, transformPerspective: 900 }}
+      onPointerMove={(e) => {
+        if (e.pointerType !== "mouse") return;
+        const r = e.currentTarget.getBoundingClientRect();
+        ry.set(((e.clientX - r.left) / r.width - 0.5) * max * 2);
+        rx.set(-((e.clientY - r.top) / r.height - 0.5) * max * 2);
+      }}
+      onPointerLeave={() => {
+        rx.set(0);
+        ry.set(0);
+      }}
+    >
+      {children}
+    </motion.div>
+  );
 }
