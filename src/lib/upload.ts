@@ -20,8 +20,10 @@ export async function saveImage(file: File, folder = "uploads"): Promise<string>
   const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
   const name = `${folder}/${Date.now()}-${randomUUID().slice(0, 8)}.${ext}`;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const blob = await put(name, file, { access: "public", contentType: file.type });
+  // Default Vercel Blob variable, or the one created with the custom prefix "SEW_BLOB"
+  const token = process.env.BLOB_READ_WRITE_TOKEN || process.env.SEW_BLOB_READ_WRITE_TOKEN;
+  if (token) {
+    const blob = await put(name, file, { access: "public", contentType: file.type, token });
     return blob.url;
   }
 
