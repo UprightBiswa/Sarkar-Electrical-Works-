@@ -12,6 +12,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Let the dev server work when opened as 127.0.0.1 (e.g. VS Code preview) or from a phone on Wi-Fi
+  allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.*.*", "10.*.*.*"],
   compress: true,
   serverExternalPackages: ["@electric-sql/pglite"],
   experimental: {

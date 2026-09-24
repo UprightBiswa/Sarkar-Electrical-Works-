@@ -12,6 +12,7 @@ export function Reveal({
 }: { children: React.ReactNode; delay?: number; y?: number } & HTMLMotionProps<"div">) {
   return (
     <motion.div
+      data-reveal
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
@@ -41,6 +42,7 @@ export function Stagger({ children, className }: { children: React.ReactNode; cl
 export function StaggerItem({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <motion.div
+      data-reveal
       className={className}
       variants={{
         hidden: { opacity: 0, y: 24, scale: 0.98 },
@@ -50,6 +52,14 @@ export function StaggerItem({ children, className }: { children: React.ReactNode
       {children}
     </motion.div>
   );
+}
+
+/** Marks <html> once React has hydrated; until then CSS shows content as a fallback. */
+export function HydrationFlag() {
+  useEffect(() => {
+    document.documentElement.classList.add("js-ready");
+  }, []);
+  return null;
 }
 
 /** Animates the numeric part of a value like "5,000+" or "< 2 hrs" when scrolled into view. */

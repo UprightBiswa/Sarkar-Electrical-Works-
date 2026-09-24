@@ -4,6 +4,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getSettings } from "@/lib/data";
+import { HydrationFlag } from "@/components/motion";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${space.variable}`}>
       <body className="min-h-screen font-sans">
         {children}
+        <HydrationFlag />
         <Analytics />
         <SpeedInsights />
       </body>
